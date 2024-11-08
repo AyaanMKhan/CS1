@@ -170,6 +170,22 @@ void height_balance(tree_node *root) {
     }
 }
 
+
+int total(tree_node *root) {
+    if (root == NULL) {
+        return 0;
+    }
+
+    return total(root->left) + total(root->right) + root->data;
+}
+
+
+int calc_below(tree_node *root, char name[]) {
+    
+    
+}
+
+
 void printAll(tree_node *root) {
     if (root == NULL) {
         return;
@@ -225,7 +241,12 @@ int main() {
         } else if(strcmp(command, "height_balance") == 0) {
 
             height_balance(root);
-
+        
+        // change the function call to calc below
+        } else if(strcmp(command, "calc_below") == 0) {
+            scanf("%s", name);
+            int total_below = calc_below(root, name);
+            printf("%d\n", total_below);
         }
     }
 
