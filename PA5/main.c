@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
+
 #define MAXLEN 25
 
 typedef struct tree_node {
@@ -137,35 +138,40 @@ float average(tree_node *root) {
     }
 }
 
+int max(int a, int b) {
+    if(a > b){
+        return a;
+    } else {
+        return b;
+    }
+}
 
 // Function to calculate the height of a tree
-int height(tree_node *node) {
-    if (node == NULL) {
-        return 0;
+int height(tree_node* root) {
+    if(root != NULL){
+        return 1 + max(height(root->left), height(root->right));
     }
-    int left_height = height(node->left);
-    int right_height = height(node->right);
-    return (left_height > right_height ? left_height : right_height) + 1;
+    return -1;
 }
 
 // Function to check the height balance of the tree and print the result once
-void height_balance(tree_node *root) {
-    if (root == NULL) {
-        return;
-    }
+int height_balance(tree_node* root) {
+   if (root != NULL)
+   {
+       int left = 0;
+       int right = 0;
+       left = height(root->left);
+       right = height(root->right);
 
-    int left_height = height(root->left);
-    int right_height = height(root->right);
-
-    int balance_factor = left_height - right_height;
-
-    if (balance_factor == 0) {
-        printf("left height = %d right height = %d balanced\n", left_height, right_height);
-    } else {
-        printf("left height = %d right height = %d not balanced\n", left_height, right_height);
-    }
+       if (left == right){
+           printf("left height = %d right height = %d balanced\n", left, right);
+       }
+       else{
+           printf("left height = %d right height = %d not balanced\n", left, right);
+       }
+   }
+   return 0;
 }
-
 
 int total(tree_node *root) {
     if (root == NULL) {
@@ -176,10 +182,25 @@ int total(tree_node *root) {
 }
 
 
-//int calc_below(tree_node *root, char name[]) {
-    
-    
-//}
+int calc_below(tree_node *root, char name[]) {
+    if (root == NULL) {
+        return 0;
+    }
+
+    int total_fines = 0;
+
+    // In-order traversal to sum up fines
+    if (strcmp(root->name, name) <= 0) {
+        total_fines += root->data;
+    }
+
+    total_fines += calc_below(root->left, name);
+    if (strcmp(root->name, name) <= 0) {
+        total_fines += calc_below(root->right, name);
+    }
+
+    return total_fines;
+}
 
 
 void printAll(tree_node *root) {
@@ -195,12 +216,12 @@ void printAll(tree_node *root) {
 int main() {
     int n;
 
-    printf("Enter the number of commands: ");
     scanf("%d", &n);
     
     char command[MAXLEN];
     char name[MAXLEN];
     tree_node *root = NULL;
+    int count = 0;
 
     while (n--) {
         scanf("%s", command);
@@ -215,6 +236,7 @@ int main() {
                 name[i] = tolower(name[i]);
             }
             root = insert(root, fine, name);
+            printf("%s %d %d\n", name, fine, height(root));
         } else if (strcmp(command, "deduct") == 0) {
             int deduct;
             scanf("%s %d", name, &deduct);
@@ -223,6 +245,8 @@ int main() {
             }
 
             root = delete(root, deduct, name);
+            printf("%s removed\n", name);
+
         } else if(strcmp(command, "search") == 0) {
             scanf("%s", name);
             for (int i = 0; name[i]; i++) {
@@ -241,8 +265,8 @@ int main() {
         // change the function call to calc below
         } else if(strcmp(command, "calc_below") == 0) {
             scanf("%s", name);
-            //int total_below = calc_below(root, name);
-            //printf("%d\n", total_below);
+            int total_below = calc_below(root, name);
+            printf("%d\n", total_below);
         }
     }
 
