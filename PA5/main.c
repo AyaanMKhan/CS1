@@ -146,31 +146,25 @@ int max(int a, int b) {
     }
 }
 
-// Function to calculate the height of a tree
-int height(tree_node* root) {
-    if(root != NULL){
-        return 1 + max(height(root->left), height(root->right));
-    }
-    return -1;
+int height(tree_node *root) {
+    if (root == NULL) return -1;
+    int leftHeight = height(root->left);
+    int rightHeight = height(root->right);
+    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
 }
 
-// Function to check the height balance of the tree and print the result once
-int height_balance(tree_node* root) {
-   if (root != NULL)
-   {
-       int left = 0;
-       int right = 0;
-       left = height(root->left);
-       right = height(root->right);
+// Check balance function
+void height_balance(tree_node *root) {
+    if (root == NULL) {
+        printf("Tree is empty\n");
+        return;
+    }
+    int leftHeight = height(root->left);
+    int rightHeight = height(root->right);
 
-       if (left == right){
-           printf("left height = %d right height = %d balanced\n", left, right);
-       }
-       else{
-           printf("left height = %d right height = %d not balanced\n", left, right);
-       }
-   }
-   return 0;
+    printf("left height = %d right height = %d %s\n",
+           leftHeight, rightHeight, 
+           (leftHeight == rightHeight) ? "balanced" : "not balanced");
 }
 
 int total(tree_node *root) {
