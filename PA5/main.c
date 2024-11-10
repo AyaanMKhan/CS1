@@ -10,7 +10,7 @@ typedef struct tree_node {
     int data;
     struct tree_node *left;
     struct tree_node *right;
-    char name[MAXLEN];
+    char name[MAXLEN + 1];
 } tree_node;
 
 tree_node *create_node(int fine, char name[]) {
