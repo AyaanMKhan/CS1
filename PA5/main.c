@@ -1,9 +1,10 @@
+/* COP 3502C Assignment 5
+This program is written by: Ayaan Khan */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-
 #define MAXLEN 25
 
 typedef struct tree_node {
@@ -13,16 +14,73 @@ typedef struct tree_node {
     char name[MAXLEN + 1];
 } tree_node;
 
+
+// Create a node for the tree
 tree_node *create_node(int fine, char name[]) {
+
     tree_node *temp = malloc(sizeof(tree_node));
     temp->data = fine;
     strcpy(temp->name, name);
+
     temp->left = NULL;
     temp->right = NULL;
+
     return temp;
+
 }
 
 
+// Find the max of the tree
+tree_node *find_max(tree_node* root) {
+    
+    if (root->right == NULL){
+        return root;
+    }
+
+   
+    return find_max(root->right);
+}
+
+
+// Find the parent of the node
+tree_node* parent(tree_node* root, tree_node* node) {
+    
+    if (root == NULL || root == node){
+        return NULL;
+    }
+
+    if (root->left == node || root->right == node){
+        return root;
+    }
+
+    if (strcmp(node->name, root->name) < 0) {
+        return parent(root->left, node);
+    } else if (strcmp(node->name, root->name) > 0) {
+        return parent(root->right, node);
+    }
+
+
+    return NULL;
+}
+
+
+// Check if the node is a leaf
+int isLeaf(tree_node* node) {
+    return (node->left == NULL && node->right == NULL);
+}
+
+// Check if the node has only right child
+int hasOnlyRightChild(tree_node* node) {
+    return (node->left == NULL && node->right != NULL);
+}
+
+// Check if the node has only left child
+int hasOnlyLeftChild(tree_node* node) {
+    return (node->left != NULL && node->right == NULL);
+}
+
+
+// Add to the tree
 tree_node *insert(tree_node *root, int fine, char name[]) {
     if (root == NULL) {
         return create_node(fine, name);
@@ -43,72 +101,169 @@ tree_node *insert(tree_node *root, int fine, char name[]) {
 }
 
 
-tree_node *find_min(tree_node *root) {
-    while (root->left != NULL) {
-        root = root->left;
-    }
-    return root;
-}
+// Search for a node in the tree
+tree_node* search(tree_node* root, char name[], int* depth) {
+    
+    // return if the name matches
+    if (root != NULL){
+        if (strcmp(name, root->name) == 0){
+            return root;
+        }
 
-tree_node *delete(tree_node *root, int deduct, char name[]) {
-    if (root == NULL) {
+        // if name is less go left
+        if (strcmp(name, root->name) < 0){
+            (*depth)++;
+            return search(root->left, name, depth);
+        }
+
+        // if name is greater go right
+        if (strcmp(name, root->name) > 0){
+            (*depth)++;
+            return search(root->right, name, depth);
+        }
+    } else {
         return NULL;
     }
 
-    if (strcmp(name, root->name) < 0) {
-        root->left = delete(root->left, deduct, name);
-    } else if (strcmp(name, root->name) > 0) {
-        root->right = delete(root->right, deduct, name);
-    } else {
-        if (deduct >= root->data) {
-            // Node to be deleted
-            if (root->left == NULL) {
-                tree_node *temp = root->right;
-                printf("%s removed\n", root->name);
-                free(root);
-                return temp;
-            } else if (root->right == NULL) {
-                tree_node *temp = root->left;
-                printf("%s removed\n", root->name);
-                free(root);
-                return temp;
-            }
+    return NULL;
+}
 
-            // Node with two children
-            tree_node *temp = find_min(root->right);
-            root->data = temp->data;
-            strcpy(root->name, temp->name);
-            root->right = delete(root->right, temp->data, temp->name);
-        } else {
-            root->data -= deduct;
+
+// Delete a node from the tree
+tree_node* delete(tree_node* root, char* name, int* data) {
+   
+    if (root == NULL){
+        return NULL;
+    }
+
+    tree_node *temp, *new, *save, *par;
+    char save_val[MAXLEN+1];
+    int depth = 0;
+
+    temp = search(root, name, &depth);
+
+    
+    if (temp != NULL){
+        *data = 1;
+    } else {
+        *data = 0;
+        return root;
+    }
+
+    par = parent(root, temp); 
+
+    // Deleting if the node is a leaf
+    if (isLeaf(temp)){
+        
+        if (par == NULL){
+            free(temp);
+            return NULL;
         }
+
+        if (strcmp(name, par->name) < 0){
+            free(par->left);
+            par->left = NULL;
+        } else {
+            free(par->right);
+            par->right = NULL;
+        }
+    } else if (hasOnlyLeftChild(temp)) { // Deleting if the node has only left child
+        if (par == NULL){
+            // Save node free and return
+            save = temp->left;
+            free(temp);
+            return save; 
+        }
+
+        if (strcmp(name,par->name) < 0){
+            save = par->left;
+            par->left = par->left->left;
+            free(save);
+        } else {
+            save = par->right;
+            par->right = par->right->left;
+            free(save);
+        }
+    } else if (hasOnlyRightChild(temp)) { // Same logic but if node has only right child
+        if (par == NULL){
+            save = temp->right;
+            free(temp);
+            return save;
+        }
+
+        if (strcmp(name,par->name) < 0){
+            save = par->left;
+            par->left = par->left->right;
+            free(save);
+        } else {
+            save = par->right;
+            par->right = par->right->right;
+            free(save);
+        }
+
+    } else { // If node has two children
+
+    new = find_max(temp->left); // Find the max of left subtree
+
+    // Save name and fine
+    strcpy(save_val, new->name);
+    int save_fines = new->data; 
+
+    // Delete the max of left subtree
+    root = delete(root, save_val, data);
+
+    // Replace
+    strcpy(temp->name, save_val); 
+    temp->data = save_fines;
+
     }
 
     return root;
 }
 
-void search(tree_node *root, char name[]){
 
-    if (root == NULL) {
-        printf("%s not found\n", name);
-        return;
+
+
+
+
+// Gets max of two integers
+int max(int x, int y){
+    if(x > y)
+    {
+        return x;
     }
 
-    if (strcmp(name, root->name) == 0) {
-        printf("%s %d\n", root->name, root->data);
-        return;
+    return y;
+}
+
+// Gets the height of the tree
+int height(tree_node* root) {
+    if(root != NULL)
+    {
+        return 1 + max(height(root->left), height(root->right));
     }
+    return -1;
+}
 
-    if (strcmp(name, root->name) < 0) {
-        search(root->left, name);
-    } else {
-        search(root->right, name);
-    }
+// Checks if the tree is balanced
+int height_balanced(tree_node* root) {
+   if (root != NULL)
+   {
+       int leftHeight = height(root->left); // Gets the height of the left subtree
+       int rightHeight = height(root->right); // Gets the height of the right subtree
 
-
+       //Compares if its balanced or not
+       if (leftHeight == rightHeight){
+           printf("left height = %d right height = %d balanced\n", leftHeight, rightHeight);
+       } else {
+           printf("left height = %d right height = %d not balanced\n", leftHeight, rightHeight);
+       }
+   }
+   return 0;
 }
 
 
+// Calculates the average of the fines
 void calculateAverage(tree_node *root, float *sum, int *count) {
     if (root == NULL) {
         return;
@@ -120,6 +275,8 @@ void calculateAverage(tree_node *root, float *sum, int *count) {
     calculateAverage(root->right, sum, count);
 }
 
+
+// Returns the average of the fines
 float average(tree_node *root) {
 
     if(root == NULL){
@@ -138,133 +295,146 @@ float average(tree_node *root) {
     }
 }
 
-int max(int a, int b) {
-    if(a > b){
-        return a;
-    } else {
-        return b;
-    }
-}
 
-int height(tree_node *root) {
-    if (root == NULL) return -1;
-    int leftHeight = height(root->left);
-    int rightHeight = height(root->right);
-    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
-}
-
-// Check balance function
-void height_balance(tree_node *root) {
-    if (root == NULL) {
-        printf("Tree is empty\n");
-        return;
-    }
-    int leftHeight = height(root->left);
-    int rightHeight = height(root->right);
-
-    printf("left height = %d right height = %d %s\n",
-           leftHeight, rightHeight, 
-           (leftHeight == rightHeight) ? "balanced" : "not balanced");
-}
-
-int total(tree_node *root) {
-    if (root == NULL) {
+// Calculates the total amount of fines for alphabetically order of names behind the name specified (name does not need to exist in the tree
+int calc_below(tree_node* root, char* name) {
+    
+    if (root == NULL){
         return 0;
     }
 
-    return total(root->left) + total(root->right) + root->data;
+    
+    if (strcmp(root->name, name) <= 0){
+        return root->data + calc_below(root->left, name) + calc_below(root->right, name);
+    }
+
+    
+    return calc_below(root->left, name) + calc_below(root->right, name);
+}
+
+// Free all the memory of the tree
+void freeMem(tree_node* root) {
+
+    if(root == NULL)
+    {
+       return;
+    }
+
+    // Start from the leaves to not leak memory (work your way up the tree)
+    freeMem(root->left);
+    freeMem(root->right);
+    free(root);
 }
 
 
-int calc_below(tree_node *root, char name[]) {
-    if (root == NULL) {
-        return 0;
-    }
-
-    int total_fines = 0;
-
-    // In-order traversal to sum up fines
-    if (strcmp(root->name, name) <= 0) {
-        total_fines += root->data;
-    }
-
-    total_fines += calc_below(root->left, name);
-    if (strcmp(root->name, name) <= 0) {
-        total_fines += calc_below(root->right, name);
-    }
-
-    return total_fines;
-}
-
-
-void printAll(tree_node *root) {
-    if (root == NULL) {
-        return;
-    }
-
-    printAll(root->left);
-    printf("%s %d\n", root->name, root->data);
-    printAll(root->right);
-}
 
 int main() {
+    // All variables we need
     int n;
-
-    scanf("%d", &n);
-    
-    char command[MAXLEN];
-    char name[MAXLEN];
+    char command[MAXLEN + 1];
+    char name[MAXLEN + 1];
     tree_node *root = NULL;
     int count = 0;
+    int depth = 0;
 
-    while (n--) {
+    scanf("%d", &n);
+    while(n--){
         scanf("%s", command);
-        for (int i = 0; command[i]; i++) {
+        for(int i = 0; i < command[i]; i++){
             command[i] = tolower(command[i]);
         }
 
-        if (strcmp(command, "add") == 0) {
+        if(strcmp(command, "add") == 0){
             int fine;
+            char name[MAXLEN + 1];
+            for(int i = 0; i < name[i]; i++){
+                name[i] = tolower(name[i]);
+            }
             scanf("%s %d", name, &fine);
-            for (int i = 0; name[i]; i++) {
-                name[i] = tolower(name[i]);
+
+            tree_node *flag = search(root, name, &depth);
+
+            // we add the fine to the existing node else we create a new node
+            if(flag != NULL){
+                flag->data += fine;
+                printf("%s %d %d\n", name, flag->data, depth);
+            } else {
+                root = insert(root, fine, name);
+                printf("%s %d %d\n", name, fine, depth);
             }
-            root = insert(root, fine, name);
-            printf("%s %d %d\n", name, fine, height(root));
-        } else if (strcmp(command, "deduct") == 0) {
+        } else if(strcmp(command, "deduct") == 0) {
             int deduct;
-            scanf("%s %d", name, &deduct);
-            for (int i = 0; name[i]; i++) {
+
+            scanf("%s %d", name, &deduct); 
+            for(int i = 0; i < name[i]; i++){
                 name[i] = tolower(name[i]);
             }
 
-            root = delete(root, deduct, name);
-            printf("%s removed\n", name);
+            tree_node *found = search(root, name, &depth);
 
+            // If the node is found we deduct the fine else we remove the node
+            if(found != NULL) {
+                if(found->data > deduct){
+                    found->data -= deduct;
+                } else {
+                    found->data = 0;
+                }
+
+                if(found->data > 0)
+                {
+                    printf("%s %d %d\n", found->name, found->data, depth);
+                } else {
+                    int flag_del = 0;
+                    root = delete(root, name, &flag_del);
+                    printf("%s removed\n", name);
+                }
+            } else {
+                printf("%s not found\n", name);
+            }
         } else if(strcmp(command, "search") == 0) {
+
+            // Search for the name and print the data and depth
+            char name[MAXLEN + 1];
             scanf("%s", name);
-            for (int i = 0; name[i]; i++) {
+
+            for(int i = 0; i < name[i]; i++){
                 name[i] = tolower(name[i]);
             }
 
-            search(root, name);
+            tree_node* found = search(root, name, &depth);
+
+            if (found == NULL) {
+                printf("%s not found\n", name);
+            } else {
+                printf("%s %d %d\n", found->name, found->data, depth);
+            }
         } else if(strcmp(command, "average") == 0) {
-            float mean;
-            mean = average(root);
-            printf("%.2f\n", mean);
+
+            // Print the average of the fines
+            float avg;
+            avg = average(root);
+            printf("%.2f\n", avg);
+
         } else if(strcmp(command, "height_balance") == 0) {
 
-            height_balance(root);
-        
-        // change the function call to calc below
+            // Print if the tree is balanced or not (left an right subtree heights are equal)
+            height_balanced(root);
+
         } else if(strcmp(command, "calc_below") == 0) {
+
+            // Print the total amount of fines in alphabetically order of names behind the name specified
+            // Name does not need to exist in the tree for this to work
+            char name[MAXLEN + 1];
             scanf("%s", name);
-            int total_below = calc_below(root, name);
-            printf("%d\n", total_below);
+
+            for(int i = 0; i < name[i]; i++){
+                name[i] = tolower(name[i]);
+            }
+            
+            printf("%d\n", calc_below(root, name));
         }
     }
 
-    printAll(root);
-
+    freeMem(root); //Frees Memory
     return 0;
 }
