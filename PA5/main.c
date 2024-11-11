@@ -335,16 +335,18 @@ int main() {
     char name[MAXLEN + 1];
     tree_node *root = NULL;
     int count = 0;
-    int depth = 0;
+    
 
     scanf("%d", &n);
     while(n--){
+        int depth = 0;
         scanf("%s", command);
         for(int i = 0; i < command[i]; i++){
             command[i] = tolower(command[i]);
         }
 
         if(strcmp(command, "add") == 0){
+            
             int fine;
             char name[MAXLEN + 1];
             for(int i = 0; i < name[i]; i++){
