@@ -1,7 +1,4 @@
-// Arup Guha
-// 11/5/2015
-// An example trie (just insertion) written in class (COP 3502)
-// later modified and added more functions by Tanvir Ahmed
+
 
 #include <stdio.h>
 #include <string.h>
