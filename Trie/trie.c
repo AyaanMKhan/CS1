@@ -145,7 +145,7 @@ struct trie* del(struct trie* root, char key[], int k)
 void insert(struct trie* tree, char word[], int k) { //  cat
 
     // Down to the end, insert the word.
-    if (k == strlen(word)) {
+    if (word[k] == '\0') {
         tree->isWord = 1;
         return;
     }
