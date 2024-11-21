@@ -39,6 +39,7 @@ Trie* insertNode(Trie *root, char *word, int frequency) {
 
     Trie *temp = root;
     for (int i = 0; word[i] != '\0'; i++) {
+        // making word lowercase
         int index = tolower(word[i]) - 'a';
         if (temp->children[index] == NULL) {
             temp->children[index] = createNode();
@@ -91,7 +92,7 @@ void searchPrefix(Trie *root, char *prefix) {
         printf("unrecognized prefix\n");
     } else {
         // if found we print the most likely letters
-        // if more than 1 that means their frequency is the same
+        // if more than 1 that means their frequency is the same (both equally as likely)
         most_likely_letters[count] = '\0';
         printf("%s\n", most_likely_letters);
     }
