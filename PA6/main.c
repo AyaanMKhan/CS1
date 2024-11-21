@@ -98,6 +98,18 @@ void searchPrefix(Trie *root, char *prefix) {
     }
 }
 
+void freeMemory(Trie *root) {
+    if (root == NULL) {
+        return;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        freeMemory(root->children[i]);
+    }
+
+    free(root);
+}
+
 int main() {
     int n;
     scanf("%d", &n);
@@ -130,6 +142,6 @@ int main() {
             searchPrefix(root, prefix);
         }
     }
-
+    freeMemory(root);
     return 0;
 }
