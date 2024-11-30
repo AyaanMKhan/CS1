@@ -149,6 +149,10 @@ void heapify(struct heapStruct *h) {
     for (i=h->size/2; i>0; i--)
         percolateDown(h, i);
 
+    // percolate up
+    for (i=1; i<=h->size; i++)
+        percolateUp(h, i);
+
 }
 
 // Runs percolate down on the heap pointed to by h on the node stored in index.
@@ -295,7 +299,7 @@ void sort(int values[], int length) {
      int i;
 
      // Create a heap from the array of values.
-     h =  initHeapfromArray(values, length);
+     h = initHeapfromArray(values, length);
      length = h->size;
 
      // Remove these values from the heap one by one and store them back in the
