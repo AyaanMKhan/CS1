@@ -149,10 +149,6 @@ void heapify(struct heapStruct *h) {
     for (i=h->size/2; i>0; i--)
         percolateDown(h, i);
 
-    // percolate up
-    for (i=1; i<=h->size; i++)
-        percolateUp(h, i);
-
 }
 
 // Runs percolate down on the heap pointed to by h on the node stored in index.
