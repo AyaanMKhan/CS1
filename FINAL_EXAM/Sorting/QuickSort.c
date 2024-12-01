@@ -29,12 +29,11 @@ int partition(int *arr, int low, int high) {
         } else if(arr[high] > arr[lowpos]){
             high--;
         } else {
-            swap(&arr[low], &arr[high]);
+            swap(&arr[high], &arr[low]);
         }
     }
 
     swap(&arr[high], &arr[lowpos]);
-    printArray(arr, 8);
     return high;
 }
 
