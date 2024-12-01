@@ -14,6 +14,7 @@ void printArray(int arr[], int size){
 void insertionSort(int arr[], int n){
 
     int i, j, item;
+    // Average: O(n^2), Best: O(n), Worst: O(n^2)
 
 
     for(i = 1; i < n; i++){
@@ -26,7 +27,6 @@ void insertionSort(int arr[], int n){
             }
         }
         arr[j+1] = item;
-        printArray(arr, n);
     }
 
 }

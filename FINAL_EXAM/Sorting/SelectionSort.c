@@ -16,6 +16,7 @@ void printArray(int arr[], int size){
 void selectionSort(int arr[], int n){
 
     int i, j, min_idx, temp;
+    // Average, Best, Worst: O(n^2)
 
     for(i = 0; i < n-1; i++){
         min_idx = i;
