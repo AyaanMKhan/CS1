@@ -40,10 +40,12 @@ int partition(int *arr, int low, int high) {
 
 // QuickSort function
 void quickSort(int* numbers, int low, int high) {
-    if (low < high) {
+    // Average, Best: O(n log n), Worst: O(n^2)
+    // Space: O(log n), O(n)
+    if(low < high){
         int pivot = partition(numbers, low, high);
-        quickSort(numbers, low, pivot - 1);
-        quickSort(numbers, pivot + 1, high);
+        quickSort(numbers, low, pivot-1);
+        quickSort(numbers, pivot+1, high);
     }
 }
 

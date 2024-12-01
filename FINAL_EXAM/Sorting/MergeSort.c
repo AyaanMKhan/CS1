@@ -8,10 +8,10 @@
 void merge(int arr[], int l, int m, int r){
 
     int lSize = (m-l)+1;
-    int rSize = r-m;
+    int rSize = (r - m);
 
-    int *left = malloc(sizeof(int)*lSize);
-    int *right = malloc(sizeof(int)*rSize);
+    int *left = malloc(sizeof(int) * lSize);
+    int *right = malloc(sizeof(int) * rSize);
 
     for(int i = 0; i < lSize; i++){
         left[i] = arr[l+i];
@@ -22,32 +22,33 @@ void merge(int arr[], int l, int m, int r){
     }
 
     int i = 0;
-    int j = 0;
     int k = 0;
+    int j = 0;
+
 
     while(i < lSize && j < rSize){
         if(left[i] <= right[j]){
             arr[k] = left[i];
-            k++;
             i++;
-        }else{
-            arr[k] = right[j];
             k++;
+        } else {
+            arr[k] = right[j];
             j++;
+            k++;
         }
     }
 
 
     while(i < lSize){
         arr[k] = left[i];
-        k++;
         i++;
+        k++;
     }
 
     while(j < rSize){
         arr[k] = right[j];
-        k++;
         j++;
+        k++;
     }
 
 
@@ -59,7 +60,8 @@ void merge(int arr[], int l, int m, int r){
 /* l is for left index and r is right index of the
    sub-array of arr to be sorted */
 void mergeSort(int arr[], int l, int r){
-
+    // Worst, Best: O(n log n)
+    // Space: O(n)
     if(l < r){
         int m = l + (r-l)/2;
 

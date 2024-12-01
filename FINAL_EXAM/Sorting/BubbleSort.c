@@ -23,7 +23,7 @@ void printArray(int arr[], int size){
 void bubbleSort(int arr[], int n){
 
     // Average: O(n^2), Best: O(n), Worst: O(n^2)
-
+    // Space: O(1)
     for(int i = 0; i < n-1; i++){
         for(int j = 0; j < n-i-1; j++){
             if(arr[j] > arr[j+1]){

@@ -15,7 +15,7 @@ void insertionSort(int arr[], int n){
 
     int i, j, item;
     // Average: O(n^2), Best: O(n), Worst: O(n^2)
-
+    // Space: O(1)
 
     for(i = 1; i < n; i++){
         item = arr[i];
