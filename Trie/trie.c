@@ -139,9 +139,6 @@ struct trie* del(struct trie* root, char key[], int k)
 }
 
 
-
-
-
 void insert(struct trie* tree, char word[], int k) { //  cat
 
     // Down to the end, insert the word.
