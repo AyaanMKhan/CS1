@@ -34,6 +34,7 @@ int partition(int *arr, int low, int high) {
     }
 
     swap(&arr[high], &arr[lowpos]);
+    printArray(arr, 8);
     return high;
 }
 
