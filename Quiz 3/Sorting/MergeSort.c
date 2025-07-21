@@ -6,55 +6,36 @@
 // First subarray is arr[l..m]
 // Second subarray is arr[m+1..r]
 void merge(int arr[], int l, int m, int r){
+    int lSize = (m - l) + 1;
+    int rSize = r - m;
 
-    int lSize = (m-l)+1;
-    int rSize = r-m;
+    int *left = malloc(sizeof(int) * lSize);
+    int *right = malloc(sizeof(int) * rSize);
 
-    int *left = malloc(sizeof(int)*lSize);
-    int *right = malloc(sizeof(int)*rSize);
+    for(int i = 0; i < lSize; i++)
+        left[i] = arr[l + i];
+    for(int i = 0; i < rSize; i++)
+        right[i] = arr[m + 1 + i];
 
-    for(int i = 0; i < lSize; i++){
-        left[i] = arr[l+i];
-    }
-
-    for(int i = 0; i < rSize; i++){
-        right[i] = arr[m+1+i];
-    }
-
-    int i = 0;
-    int j = 0;
-    int k = 0;
+    int i = 0, j = 0, k = l;
 
     while(i < lSize && j < rSize){
         if(left[i] <= right[j]){
-            arr[k] = left[i];
-            k++;
-            i++;
-        }else{
-            arr[k] = right[j];
-            k++;
-            j++;
+            arr[k++] = left[i++];
+        } else {
+            arr[k++] = right[j++];
         }
     }
 
-
-    while(i < lSize){
-        arr[k] = left[i];
-        k++;
-        i++;
-    }
-
-    while(j < rSize){
-        arr[k] = right[j];
-        k++;
-        j++;
-    }
-
+    while(i < lSize)
+        arr[k++] = left[i++];
+    while(j < rSize)
+        arr[k++] = right[j++];
 
     free(left);
     free(right);
-
 }
+
 
 /* l is for left index and r is right index of the
    sub-array of arr to be sorted */
@@ -65,7 +46,6 @@ void mergeSort(int arr[], int l, int r){
 
         mergeSort(arr, l, m);
         mergeSort(arr, m+1, r);
-
         merge(arr, l, m, r);
     }
 
@@ -91,7 +71,7 @@ int main()
     printf("Given array is \n");
     printArray(arr, arr_size);
 
-    mergeSort(arr, 0, arr_size - 1);
+    mergeSort(arr, 0, arr_size-1);
 
     printf("\nSorted array is \n");
     printArray(arr, arr_size);
